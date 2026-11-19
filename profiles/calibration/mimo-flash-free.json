@@ -1,0 +1,1291 @@
+{
+  "profile": "mimo-flash-free",
+  "model": "mimo-v2.6-flash:free",
+  "output": "tool_calls",
+  "date": "2026-11-19T23:12:19",
+  "trials_per_condition": 16,
+  "answered": 42,
+  "calls": 48,
+  "errors": [],
+  "capabilities": {
+    "text": {
+      "ok": true,
+      "reply": "pong",
+      "s": 6.34
+    },
+    "image": {
+      "ok": true,
+      "reply": "CODE 1170",
+      "read_correctly": true,
+      "s": 6.69
+    },
+    "tools": {
+      "ok": true,
+      "native_tool_call": true,
+      "correct": true,
+      "reasoning_returned": true,
+      "s": 12.53
+    },
+    "json_text": {
+      "ok": true,
+      "parsed": true,
+      "s": 9.35
+    },
+    "suggested_output": "tool_calls"
+  },
+  "best": {
+    "convention": "pixels",
+    "median_px": 2.12,
+    "mean_px": 2.18,
+    "p90_px": 3.81,
+    "hit_rate": 1.0,
+    "n": 15,
+    "basis": "instructed"
+  },
+  "instructed": {
+    "pixels": {
+      "median_px": 2.12,
+      "mean_px": 2.18,
+      "p90_px": 3.81,
+      "hit_rate": 1.0,
+      "n": 15
+    },
+    "norm1000": {
+      "median_px": 35.48,
+      "mean_px": 86.25,
+      "p90_px": 214.07,
+      "hit_rate": 0.462,
+      "n": 13
+    }
+  },
+  "native": {
+    "scores": {
+      "pixels": {
+        "median_px": 24.53,
+        "mean_px": 77.4,
+        "p90_px": 155.6,
+        "hit_rate": 0.5,
+        "n": 14
+      },
+      "norm1000": {
+        "median_px": 38.28,
+        "mean_px": 111.75,
+        "p90_px": 245.06,
+        "hit_rate": 0.429,
+        "n": 14
+      },
+      "norm999": {
+        "median_px": 38.32,
+        "mean_px": 111.88,
+        "p90_px": 245.31,
+        "hit_rate": 0.429,
+        "n": 14
+      },
+      "norm1": {
+        "median_px": 774751.51,
+        "mean_px": 778927.94,
+        "p90_px": 1255960.04,
+        "hit_rate": 0.0,
+        "n": 14
+      }
+    },
+    "best_fit_per_answer": {
+      "pixels": 8,
+      "norm1000": 6
+    },
+    "consistent": false
+  },
+  "median_error_by_target_size_px": {
+    "14": 1.6,
+    "20": 1.6,
+    "28": 2.1,
+    "40": 3.8,
+    "56": 2.1,
+    "80": 3.2
+  },
+  "duration_s": 211.9,
+  "trials_detail": [
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "instructed": null,
+      "answer": [
+        877,
+        707
+      ],
+      "latency": 8.23,
+      "tokens": [
+        1248,
+        68
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "instructed": null,
+      "answer": [
+        507,
+        314
+      ],
+      "latency": 5.53,
+      "tokens": [
+        1012,
+        53
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "instructed": null,
+      "answer": [
+        67,
+        766
+      ],
+      "latency": 6.78,
+      "tokens": [
+        1198,
+        127
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "instructed": null,
+      "answer": [
+        841,
+        406
+      ],
+      "latency": 33.59,
+      "tokens": [
+        1280,
+        62
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "instructed": null,
+      "answer": [
+        660,
+        535
+      ],
+      "latency": 63.34,
+      "tokens": [
+        1248,
+        1050
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "instructed": null,
+      "answer": null,
+      "latency": 32.81,
+      "tokens": [
+        1016,
+        59
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "instructed": null,
+      "answer": [
+        187,
+        67
+      ],
+      "latency": 20.66,
+      "tokens": [
+        1194,
+        60
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "instructed": null,
+      "answer": [
+        73,
+        620
+      ],
+      "latency": 10.31,
+      "tokens": [
+        1280,
+        115
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "instructed": null,
+      "answer": [
+        799,
+        388
+      ],
+      "latency": 15.04,
+      "tokens": [
+        1248,
+        511
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "instructed": null,
+      "answer": [
+        112,
+        807
+      ],
+      "latency": 18.56,
+      "tokens": [
+        1012,
+        62
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "instructed": null,
+      "answer": [
+        664,
+        1151
+      ],
+      "latency": 17.47,
+      "tokens": [
+        1198,
+        108
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "instructed": null,
+      "answer": [
+        141,
+        137
+      ],
+      "latency": 16.82,
+      "tokens": [
+        1280,
+        131
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "instructed": null,
+      "answer": null,
+      "latency": 11.07,
+      "tokens": [
+        1248,
+        42
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "instructed": null,
+      "answer": [
+        49,
+        124
+      ],
+      "latency": 13.21,
+      "tokens": [
+        1016,
+        127
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "instructed": null,
+      "answer": [
+        129,
+        192
+      ],
+      "latency": 8.01,
+      "tokens": [
+        1194,
+        386
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "instructed": null,
+      "answer": [
+        1139,
+        551
+      ],
+      "latency": 5.92,
+      "tokens": [
+        1280,
+        60
+      ]
+    },
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        876,
+        566
+      ],
+      "latency": 12.13,
+      "tokens": [
+        1294,
+        66
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        514,
+        243
+      ],
+      "latency": 13.23,
+      "tokens": [
+        1058,
+        69
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        61,
+        922
+      ],
+      "latency": 12.25,
+      "tokens": [
+        1244,
+        93
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        1147,
+        310
+      ],
+      "latency": 5.85,
+      "tokens": [
+        1326,
+        49
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "instructed": "pixels",
+      "answer": null,
+      "latency": 8.73,
+      "tokens": [
+        1290,
+        44
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        299,
+        164
+      ],
+      "latency": 5.3,
+      "tokens": [
+        1062,
+        112
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        150,
+        82
+      ],
+      "latency": 29.96,
+      "tokens": [
+        1244,
+        926
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        102,
+        473
+      ],
+      "latency": 8.65,
+      "tokens": [
+        1326,
+        151
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        797,
+        387
+      ],
+      "latency": 11.2,
+      "tokens": [
+        1294,
+        97
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        113,
+        619
+      ],
+      "latency": 6.43,
+      "tokens": [
+        1062,
+        68
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        663,
+        1144
+      ],
+      "latency": 9.09,
+      "tokens": [
+        1244,
+        108
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        141,
+        135
+      ],
+      "latency": 5.86,
+      "tokens": [
+        1326,
+        67
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        730,
+        401
+      ],
+      "latency": 3.95,
+      "tokens": [
+        1290,
+        67
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        50,
+        124
+      ],
+      "latency": 6.37,
+      "tokens": [
+        1062,
+        164
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        127,
+        192
+      ],
+      "latency": 4.85,
+      "tokens": [
+        1244,
+        85
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        1140,
+        554
+      ],
+      "latency": 13.17,
+      "tokens": [
+        1326,
+        100
+      ]
+    },
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        876,
+        567
+      ],
+      "latency": 9.3,
+      "tokens": [
+        1313,
+        91
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        510,
+        235
+      ],
+      "latency": 8.04,
+      "tokens": [
+        1081,
+        68
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        94,
+        638
+      ],
+      "latency": 14.05,
+      "tokens": [
+        1263,
+        321
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        841,
+        365
+      ],
+      "latency": 16.13,
+      "tokens": [
+        1345,
+        484
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        660,
+        537
+      ],
+      "latency": 4.23,
+      "tokens": [
+        1313,
+        62
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        302,
+        166
+      ],
+      "latency": 4.58,
+      "tokens": [
+        1081,
+        52
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        191,
+        67
+      ],
+      "latency": 15.89,
+      "tokens": [
+        1263,
+        60
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        101,
+        476
+      ],
+      "latency": 12.11,
+      "tokens": [
+        1341,
+        92
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        794,
+        481
+      ],
+      "latency": 6.48,
+      "tokens": [
+        1313,
+        65
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        115,
+        812
+      ],
+      "latency": 7.24,
+      "tokens": [
+        1081,
+        157
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "instructed": "norm1000",
+      "answer": null,
+      "latency": 4.14,
+      "tokens": [
+        1259,
+        66
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        101,
+        175
+      ],
+      "latency": 8.16,
+      "tokens": [
+        1345,
+        265
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "instructed": "norm1000",
+      "answer": null,
+      "latency": 13.01,
+      "tokens": [
+        1313,
+        128
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        51,
+        161
+      ],
+      "latency": 11.51,
+      "tokens": [
+        1077,
+        125
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        153,
+        159
+      ],
+      "latency": 14.12,
+      "tokens": [
+        1263,
+        154
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "instructed": "norm1000",
+      "answer": null,
+      "latency": 16.88,
+      "tokens": [
+        1345,
+        175
+      ]
+    }
+  ]
+}

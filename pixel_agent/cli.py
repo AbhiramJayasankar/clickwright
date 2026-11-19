@@ -79,10 +79,13 @@ def cmd_capabilities(args):
 def cmd_calibrate(args):
     from .calibrate import calibrate
     p = _profile(args)
-    data = calibrate(p, trials=args.trials, workers=args.workers, verbose=True)
+    data = calibrate(p, trials=args.trials, workers=args.workers, verbose=True,
+                     instruct=tuple(c for c in args.instruct.split(",") if c))
     print(f"\nsaved: {data.get('saved_to')}")
-    print(f"best convention: {data['best'].get('convention')}  median error {data['best'].get('median_px')} px, "
-          f"hit rate {data['best'].get('hit_rate')}")
+    b = data["best"]
+    print(f"best convention: {b.get('convention')} ({b.get('basis')})  median error {b.get('median_px')} px, "
+          f"hit rate {b.get('hit_rate')}; native answers consistent: {data['native']['consistent']} "
+          f"{data['native']['best_fit_per_answer']}")
 
 
 def _safety(args, desktop=True):
@@ -228,6 +231,8 @@ def build_parser():
     prof(sp)
     sp.add_argument("--trials", type=int, default=16)
     sp.add_argument("--workers", type=int, default=4)
+    sp.add_argument("--instruct", default="pixels,norm1000",
+                    help="conventions to test when stated in the prompt (comma list; empty = native only)")
     sp.set_defaults(fn=cmd_calibrate)
 
     sp = sub.add_parser("sim")

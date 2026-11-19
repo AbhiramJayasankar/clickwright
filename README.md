@@ -102,6 +102,26 @@ screenshot (GDI, scaled in-driver, cursor drawn) ──► model ──► tool 
   that was hit, timings, tokens and cost. `report.html` replays it with click
   markers.
 
+## Measured so far (2026-11-19, Token Harbor free routes)
+
+`calibrate` draws the same 16 test images three times: once with the
+coordinate system unstated, once stated as pixels, and once stated as 0–1000.
+Errors are measured from the target's centre. Targets are 14–80 px in
+1024–1366 px images.
+
+| model | unstated: answers fit | told "pixels" | told "0–1000" |
+|---|---|---|---|
+| deepseek-v4.1-flash:free | pixels 16/16 | median 1.6 px, 14/16 hits | median 8.5 px, 11/16 hits |
+| mimo-v2.6-flash:free | **mixed**: pixels 8, 0–1000 6 | median 2.1 px, 15/15 hits | median 35 px, 6/13 hits |
+
+So a model can switch conventions from one answer to the next when the prompt
+doesn't say which to use. Always state one. These two models aim best when told pixels.
+
+Simulator eval, `deepseek-v4.1-flash:free`: 5/5 scenes passed (form 17 steps,
+targets 25, scroll 5, slider 2, menu 7). In the targets scene the two smallest
+circles are about 9 px; the model misread their labels and used every step,
+but hit all six.
+
 ## Layout
 
 ```

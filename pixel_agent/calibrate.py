@@ -17,7 +17,7 @@ from datetime import datetime
 
 from . import actions as A
 from .config import save_calibration
-from .geometry import CONVENTIONS, model_to_image
+from .geometry import CONVENTIONS, model_to_image, describe_convention
 from .llm import ChatClient, ModelError, image_part
 
 COLORS = {"red": (220, 38, 38), "blue": (37, 99, 235), "green": (22, 163, 74), "orange": (234, 88, 12),
@@ -61,14 +61,19 @@ def _draw_trial(rng, size_px, img_w, img_h):
     return png, shapes[0]
 
 
-def _ask_point(client, png, w, h, target, mode, max_tokens):
+def _ask_point(client, png, w, h, target, mode, max_tokens, instructed=None):
+    """instructed=None leaves the coordinate system unstated (the model's native habit);
+    instructed='pixels' etc. states it the way the agent's prompt does."""
     q = (f"Find the {target['color']} {target['shape']} in this image and click its centre. "
          "Do not explain, just act.")
+    if instructed:
+        q = describe_convention(instructed, w, h) + " " + q
     if mode == "tool_calls":
-        tools = [t for t in A.tool_schemas("pixels") if t["function"]["name"] == "click"]
-        # Leave the coordinate system unstated on purpose: we want the model's own convention.
-        tools[0]["function"]["parameters"]["properties"]["x"]["description"] = "x coordinate of the click"
-        tools[0]["function"]["parameters"]["properties"]["y"]["description"] = "y coordinate of the click"
+        tools = [t for t in A.tool_schemas(instructed or "pixels") if t["function"]["name"] == "click"]
+        if not instructed:
+            # Leave the coordinate system unstated on purpose: we want the model's own convention.
+            tools[0]["function"]["parameters"]["properties"]["x"]["description"] = "x coordinate of the click"
+            tools[0]["function"]["parameters"]["properties"]["y"]["description"] = "y coordinate of the click"
         msgs = [{"role": "user", "content": [{"type": "text", "text": q}, image_part(png)]}]
         comp = client.complete(msgs, tools=tools, max_tokens=max_tokens)
         acts = A.from_tool_calls(comp.tool_calls) or A.from_text(comp.content)
@@ -133,7 +138,8 @@ def capabilities(client, max_tokens=2048):
     return out
 
 
-def calibrate(profile, trials=16, workers=4, seed=1234, max_tokens=None, verbose=True, save=True):
+def calibrate(profile, trials=16, workers=4, seed=1234, max_tokens=None, verbose=True, save=True,
+              instruct=("pixels", "norm1000")):
     client = ChatClient.from_profile(profile)
     rng = random.Random(seed)
     mode = profile.output
@@ -141,7 +147,7 @@ def calibrate(profile, trials=16, workers=4, seed=1234, max_tokens=None, verbose
     jobs = []
     for i in range(trials):
         w, h = SIZES[i % len(SIZES)]
-        jobs.append((i, w, h, sizes_px[i % len(sizes_px)], random.Random(rng.random())))
+        jobs.append((i, w, h, sizes_px[i % len(sizes_px)], rng.random()))
     caps = capabilities(client, max_tokens=max_tokens or profile.max_tokens)
     if verbose:
         print(json.dumps({"capabilities": caps}, indent=1))
@@ -149,53 +155,77 @@ def calibrate(profile, trials=16, workers=4, seed=1234, max_tokens=None, verbose
         raise ModelError(f"image input failed: {caps['image'].get('error')}")
 
     def run(job):
-        i, w, h, s, r = job
-        png, target = _draw_trial(r, s, w, h)
+        i, w, h, s, r, instructed = job
+        png, target = _draw_trial(random.Random(r), s, w, h)
+        base = {"i": i, "w": w, "h": h, "size": s, "target": target, "instructed": instructed}
         try:
-            pt, comp = _ask_point(client, png, w, h, target, mode, max_tokens or profile.max_tokens)
+            pt, comp = _ask_point(client, png, w, h, target, mode, max_tokens or profile.max_tokens, instructed)
         except ModelError as e:
-            return {"i": i, "w": w, "h": h, "size": s, "target": target, "error": str(e)[:200]}
-        return {"i": i, "w": w, "h": h, "size": s, "target": target, "answer": pt,
-                "latency": round(comp.latency, 2), "tokens": [comp.prompt_tokens, comp.completion_tokens]}
+            return {**base, "error": str(e)[:200]}
+        return {**base, "answer": pt, "latency": round(comp.latency, 2),
+                "tokens": [comp.prompt_tokens, comp.completion_tokens]}
 
+    # Same images for every condition, so the conditions are directly comparable.
+    all_jobs = [(*j, None) for j in jobs] + [(*j, c) for c in instruct for j in jobs]
     t0 = time.time()
     with cf.ThreadPoolExecutor(workers) as ex:
-        results = list(ex.map(run, jobs))
-    answered = [r for r in results if r.get("answer")]
-    scores = {}
-    for conv in CONVENTIONS:
-        errs, hits = [], 0
-        for r in answered:
-            ix, iy = model_to_image(r["answer"][0], r["answer"][1], conv, r["w"], r["h"])
-            t = r["target"]
-            d = ((ix - t["cx"]) ** 2 + (iy - t["cy"]) ** 2) ** 0.5
-            errs.append(d)
-            hits += d <= t["size"] / 2
-        if errs:
-            scores[conv] = {"median_px": round(statistics.median(errs), 2), "mean_px": round(statistics.mean(errs), 2),
-                            "p90_px": round(sorted(errs)[int(0.9 * (len(errs) - 1))], 2),
-                            "hit_rate": round(hits / len(errs), 3)}
-    best = min(scores.items(), key=lambda kv: kv[1]["median_px"]) if scores else (None, {})
+        results = list(ex.map(run, all_jobs))
+
+    def err(r, conv):
+        ix, iy = model_to_image(r["answer"][0], r["answer"][1], conv, r["w"], r["h"])
+        t = r["target"]
+        return ((ix - t["cx"]) ** 2 + (iy - t["cy"]) ** 2) ** 0.5
+
+    def score(rows, conv):
+        errs = [err(r, conv) for r in rows]
+        if not errs:
+            return None
+        hits = sum(e <= r["target"]["size"] / 2 for e, r in zip(errs, rows))
+        return {"median_px": round(statistics.median(errs), 2), "mean_px": round(statistics.mean(errs), 2),
+                "p90_px": round(sorted(errs)[int(0.9 * (len(errs) - 1))], 2),
+                "hit_rate": round(hits / len(errs), 3), "n": len(errs)}
+
+    native = [r for r in results if r["instructed"] is None and r.get("answer")]
+    native_scores = {c: score(native, c) for c in CONVENTIONS if native}
+    # Which convention fits each native answer best: shows whether the model is consistent.
+    mix = {}
+    for r in native:
+        b = min(("pixels", "norm1000", "norm1"), key=lambda c: err(r, c))
+        mix[b] = mix.get(b, 0) + 1
+    instructed_scores = {}
+    for c in instruct:
+        rows = [r for r in results if r["instructed"] == c and r.get("answer")]
+        instructed_scores[c] = score(rows, c)
+    candidates = {c: v for c, v in instructed_scores.items() if v}
+    if candidates:   # what the agent will actually do: state a convention and rely on it
+        best_conv = min(candidates, key=lambda c: (-candidates[c]["hit_rate"], candidates[c]["median_px"]))
+        best = (best_conv, {**candidates[best_conv], "basis": "instructed"})
+    else:
+        nat = {c: v for c, v in native_scores.items() if v}
+        best_conv = min(nat, key=lambda c: nat[c]["median_px"]) if nat else None
+        best = (best_conv, {**nat[best_conv], "basis": "native"} if best_conv else {})
     by_size = {}
     if best[0]:
-        for r in answered:
-            ix, iy = model_to_image(r["answer"][0], r["answer"][1], best[0], r["w"], r["h"])
-            t = r["target"]
-            by_size.setdefault(t["size"], []).append(((ix - t["cx"]) ** 2 + (iy - t["cy"]) ** 2) ** 0.5)
+        rows = [r for r in results if r.get("answer") and r["instructed"] == (best[0] if candidates else None)]
+        for r in rows:
+            by_size.setdefault(r["target"]["size"], []).append(err(r, best[0]))
     data = {
         "profile": profile.name, "model": profile.model, "output": mode,
-        "date": datetime.now().isoformat(timespec="seconds"), "trials": trials,
-        "answered": len(answered), "errors": [r for r in results if r.get("error")][:5],
+        "date": datetime.now().isoformat(timespec="seconds"), "trials_per_condition": trials,
+        "answered": sum(1 for r in results if r.get("answer")), "calls": len(results),
+        "errors": [r for r in results if r.get("error")][:5],
         "capabilities": caps,
         "best": {"convention": best[0], **best[1]},
-        "scores": scores,
+        "instructed": instructed_scores,
+        "native": {"scores": native_scores, "best_fit_per_answer": mix,
+                   "consistent": len(mix) == 1},
         "median_error_by_target_size_px": {str(k): round(statistics.median(v), 1) for k, v in sorted(by_size.items())},
         "duration_s": round(time.time() - t0, 1),
-        "trials_detail": [{k: v for k, v in r.items()} for r in results],
+        "trials_detail": results,
     }
     if save:
         data["saved_to"] = str(save_calibration(profile.name, data))
     if verbose:
-        print(json.dumps({k: data[k] for k in ("best", "scores", "median_error_by_target_size_px",
-                                                  "answered", "duration_s")}, indent=1))
+        print(json.dumps({k: data[k] for k in ("best", "instructed", "native", "median_error_by_target_size_px",
+                                                  "answered", "calls", "duration_s")}, indent=1))
     return data

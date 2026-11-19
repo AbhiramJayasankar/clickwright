@@ -12,3 +12,5 @@
   (password managers, `.env`), password-box check, confirm and dry-run modes.
 - Offline simulator with five self-checking scenes, sim and desktop evals, real-screen driver test.
 - Run logs with every screenshot and model reply, plus an HTML replay with click markers.
+- Calibration compares the model's unstated habit with how well it follows each stated convention,
+  and flags models that switch conventions between answers.

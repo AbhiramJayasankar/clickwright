@@ -2,78 +2,107 @@
   "profile": "deepseek-flash-free",
   "model": "deepseek-v4.1-flash:free",
   "output": "tool_calls",
-  "date": "2026-11-19T22:56:55",
-  "trials": 16,
-  "answered": 16,
+  "date": "2026-11-19T23:13:51",
+  "trials_per_condition": 16,
+  "answered": 48,
+  "calls": 48,
   "errors": [],
   "capabilities": {
     "text": {
       "ok": true,
       "reply": "pong",
-      "s": 7.17
+      "s": 5.0
     },
     "image": {
       "ok": true,
-      "reply": "CODE 7117",
+      "reply": "CODE 9797",
       "read_correctly": true,
-      "s": 1.63
+      "s": 1.49
     },
     "tools": {
       "ok": true,
       "native_tool_call": true,
       "correct": true,
-      "reasoning_returned": false,
-      "s": 1.67
+      "reasoning_returned": true,
+      "s": 1.64
     },
     "json_text": {
       "ok": true,
       "parsed": true,
-      "s": 2.17
+      "s": 4.31
     },
     "suggested_output": "tool_calls"
   },
   "best": {
     "convention": "pixels",
-    "median_px": 2.12,
-    "mean_px": 2.36,
+    "median_px": 1.58,
+    "mean_px": 5.94,
     "p90_px": 3.54,
-    "hit_rate": 1.0
+    "hit_rate": 0.875,
+    "n": 16,
+    "basis": "instructed"
   },
-  "scores": {
+  "instructed": {
     "pixels": {
-      "median_px": 2.12,
-      "mean_px": 2.36,
+      "median_px": 1.58,
+      "mean_px": 5.94,
       "p90_px": 3.54,
-      "hit_rate": 1.0
+      "hit_rate": 0.875,
+      "n": 16
     },
     "norm1000": {
-      "median_px": 163.93,
-      "mean_px": 173.99,
-      "p90_px": 268.74,
-      "hit_rate": 0.062
-    },
-    "norm999": {
-      "median_px": 164.1,
-      "mean_px": 174.16,
-      "p90_px": 269.01,
-      "hit_rate": 0.062
-    },
-    "norm1": {
-      "median_px": 751051.79,
-      "mean_px": 779743.48,
-      "p90_px": 1468701.48,
-      "hit_rate": 0.0
+      "median_px": 8.49,
+      "mean_px": 27.47,
+      "p90_px": 59.17,
+      "hit_rate": 0.688,
+      "n": 16
     }
   },
-  "median_error_by_target_size_px": {
-    "14": 2.1,
-    "20": 2.1,
-    "28": 2.1,
-    "40": 3.5,
-    "56": 1.1,
-    "80": 2.1
+  "native": {
+    "scores": {
+      "pixels": {
+        "median_px": 1.58,
+        "mean_px": 7.74,
+        "p90_px": 13.73,
+        "hit_rate": 0.875,
+        "n": 16
+      },
+      "norm1000": {
+        "median_px": 188.66,
+        "mean_px": 179.3,
+        "p90_px": 306.89,
+        "hit_rate": 0.062,
+        "n": 16
+      },
+      "norm999": {
+        "median_px": 188.82,
+        "mean_px": 179.47,
+        "p90_px": 307.16,
+        "hit_rate": 0.062,
+        "n": 16
+      },
+      "norm1": {
+        "median_px": 752240.59,
+        "mean_px": 781963.95,
+        "p90_px": 1513868.43,
+        "hit_rate": 0.0,
+        "n": 16
+      }
+    },
+    "best_fit_per_answer": {
+      "pixels": 16
+    },
+    "consistent": true
   },
-  "duration_s": 13.9,
+  "median_error_by_target_size_px": {
+    "14": 1.6,
+    "20": 2.1,
+    "28": 1.6,
+    "40": 2.1,
+    "56": 1.6,
+    "80": 2.6
+  },
+  "duration_s": 65.2,
   "trials_detail": [
     {
       "i": 0,
@@ -89,14 +118,15 @@
         "cx": 877.5,
         "cy": 565.5
       },
+      "instructed": null,
       "answer": [
         877,
-        569
+        564
       ],
-      "latency": 1.71,
+      "latency": 4.98,
       "tokens": [
         1093,
-        66
+        171
       ]
     },
     {
@@ -113,14 +143,15 @@
         "cx": 513.5,
         "cy": 242.5
       },
+      "instructed": null,
       "answer": [
         512,
-        240
+        242
       ],
-      "latency": 1.93,
+      "latency": 1.63,
       "tokens": [
         947,
-        72
+        53
       ]
     },
     {
@@ -137,14 +168,15 @@
         "cx": 61.5,
         "cy": 921.5
       },
+      "instructed": null,
       "answer": [
         59,
-        920
+        935
       ],
-      "latency": 1.82,
+      "latency": 2.85,
       "tokens": [
         1062,
-        66
+        54
       ]
     },
     {
@@ -161,14 +193,15 @@
         "cx": 1148.5,
         "cy": 311.5
       },
+      "instructed": null,
       "answer": [
-        1145,
+        1147,
         311
       ],
-      "latency": 1.85,
+      "latency": 1.8,
       "tokens": [
         1099,
-        86
+        101
       ]
     },
     {
@@ -185,14 +218,15 @@
         "cx": 660.5,
         "cy": 538.5
       },
+      "instructed": null,
       "answer": [
-        660,
-        537
+        661,
+        539
       ],
-      "latency": 1.79,
+      "latency": 1.54,
       "tokens": [
         1093,
-        65
+        54
       ]
     },
     {
@@ -209,11 +243,12 @@
         "cx": 303.5,
         "cy": 162.5
       },
+      "instructed": null,
       "answer": [
         303,
-        163
+        161
       ],
-      "latency": 2.49,
+      "latency": 1.67,
       "tokens": [
         947,
         65
@@ -233,11 +268,12 @@
         "cx": 149.5,
         "cy": 81.5
       },
+      "instructed": null,
       "answer": [
-        148,
-        80
+        149,
+        82
       ],
-      "latency": 2.12,
+      "latency": 3.09,
       "tokens": [
         1062,
         65
@@ -257,14 +293,15 @@
         "cx": 100.5,
         "cy": 475.5
       },
+      "instructed": null,
       "answer": [
-        99,
-        474
+        100,
+        476
       ],
-      "latency": 1.62,
+      "latency": 1.68,
       "tokens": [
         1099,
-        66
+        65
       ]
     },
     {
@@ -281,14 +318,15 @@
         "cx": 799.5,
         "cy": 387.5
       },
+      "instructed": null,
       "answer": [
-        800,
-        386
+        798,
+        388
       ],
-      "latency": 1.82,
+      "latency": 1.93,
       "tokens": [
         1093,
-        54
+        66
       ]
     },
     {
@@ -305,14 +343,15 @@
         "cx": 114.5,
         "cy": 622.5
       },
+      "instructed": null,
       "answer": [
-        113,
-        622
+        114,
+        581
       ],
-      "latency": 1.6,
+      "latency": 8.91,
       "tokens": [
         947,
-        65
+        54
       ]
     },
     {
@@ -329,14 +368,15 @@
         "cx": 661.5,
         "cy": 1142.5
       },
+      "instructed": null,
       "answer": [
-        661,
-        1143
+        662,
+        1183
       ],
-      "latency": 1.67,
+      "latency": 8.01,
       "tokens": [
         1062,
-        71
+        55
       ]
     },
     {
@@ -353,14 +393,15 @@
         "cx": 140.5,
         "cy": 136.5
       },
+      "instructed": null,
       "answer": [
-        141,
-        133
+        140,
+        144
       ],
-      "latency": 2.07,
+      "latency": 8.16,
       "tokens": [
         1099,
-        99
+        77
       ]
     },
     {
@@ -377,14 +418,15 @@
         "cx": 729.5,
         "cy": 402.5
       },
+      "instructed": null,
       "answer": [
-        731,
-        404
+        728,
+        401
       ],
-      "latency": 8.19,
+      "latency": 2.45,
       "tokens": [
         1093,
-        92
+        91
       ]
     },
     {
@@ -401,14 +443,15 @@
         "cx": 48.5,
         "cy": 124.5
       },
+      "instructed": null,
       "answer": [
         48,
-        123
+        122
       ],
-      "latency": 8.4,
+      "latency": 2.23,
       "tokens": [
         947,
-        65
+        68
       ]
     },
     {
@@ -425,14 +468,15 @@
         "cx": 128.5,
         "cy": 190.5
       },
+      "instructed": null,
       "answer": [
         127,
-        189
+        190
       ],
-      "latency": 6.04,
+      "latency": 2.81,
       "tokens": [
         1062,
-        65
+        54
       ]
     },
     {
@@ -449,14 +493,815 @@
         "cx": 1136.5,
         "cy": 555.5
       },
+      "instructed": null,
       "answer": [
-        1141,
+        1140,
         553
       ],
-      "latency": 6.5,
+      "latency": 1.9,
       "tokens": [
         1099,
-        68
+        72
+      ]
+    },
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        878,
+        566
+      ],
+      "latency": 1.42,
+      "tokens": [
+        1135,
+        65
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        511,
+        243
+      ],
+      "latency": 1.69,
+      "tokens": [
+        989,
+        66
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        61,
+        883
+      ],
+      "latency": 1.46,
+      "tokens": [
+        1104,
+        69
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        1150,
+        310
+      ],
+      "latency": 1.47,
+      "tokens": [
+        1141,
+        55
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        659,
+        539
+      ],
+      "latency": 1.69,
+      "tokens": [
+        1135,
+        54
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        303,
+        161
+      ],
+      "latency": 1.87,
+      "tokens": [
+        989,
+        65
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        148,
+        80
+      ],
+      "latency": 1.56,
+      "tokens": [
+        1104,
+        66
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        100,
+        474
+      ],
+      "latency": 2.91,
+      "tokens": [
+        1141,
+        65
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        798,
+        387
+      ],
+      "latency": 1.76,
+      "tokens": [
+        1135,
+        63
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        113,
+        591
+      ],
+      "latency": 1.61,
+      "tokens": [
+        989,
+        74
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        660,
+        1143
+      ],
+      "latency": 2.97,
+      "tokens": [
+        1104,
+        55
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        141,
+        140
+      ],
+      "latency": 2.23,
+      "tokens": [
+        1141,
+        66
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        728,
+        403
+      ],
+      "latency": 1.6,
+      "tokens": [
+        1135,
+        65
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        47,
+        123
+      ],
+      "latency": 6.83,
+      "tokens": [
+        989,
+        53
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        129,
+        190
+      ],
+      "latency": 8.93,
+      "tokens": [
+        1104,
+        54
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "instructed": "pixels",
+      "answer": [
+        1137,
+        554
+      ],
+      "latency": 5.48,
+      "tokens": [
+        1141,
+        67
+      ]
+    },
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        686,
+        709
+      ],
+      "latency": 3.67,
+      "tokens": [
+        1148,
+        70
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        512,
+        240
+      ],
+      "latency": 3.24,
+      "tokens": [
+        1002,
+        65
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        80,
+        771
+      ],
+      "latency": 3.05,
+      "tokens": [
+        1117,
+        112
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        844,
+        409
+      ],
+      "latency": 7.16,
+      "tokens": [
+        1154,
+        133
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        403,
+        671
+      ],
+      "latency": 7.73,
+      "tokens": [
+        1148,
+        105
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        296,
+        198
+      ],
+      "latency": 7.58,
+      "tokens": [
+        1002,
+        53
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        184,
+        81
+      ],
+      "latency": 1.87,
+      "tokens": [
+        1117,
+        53
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        75,
+        479
+      ],
+      "latency": 1.65,
+      "tokens": [
+        1154,
+        54
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        623,
+        480
+      ],
+      "latency": 2.2,
+      "tokens": [
+        1148,
+        112
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        113,
+        787
+      ],
+      "latency": 8.12,
+      "tokens": [
+        1002,
+        54
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        826,
+        934
+      ],
+      "latency": 8.42,
+      "tokens": [
+        1117,
+        54
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        104,
+        186
+      ],
+      "latency": 7.81,
+      "tokens": [
+        1154,
+        113
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        568,
+        502
+      ],
+      "latency": 1.96,
+      "tokens": [
+        1148,
+        69
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        46,
+        123
+      ],
+      "latency": 2.04,
+      "tokens": [
+        1002,
+        64
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        159,
+        161
+      ],
+      "latency": 1.85,
+      "tokens": [
+        1117,
+        111
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "instructed": "norm1000",
+      "answer": [
+        834,
+        719
+      ],
+      "latency": 8.98,
+      "tokens": [
+        1154,
+        54
       ]
     }
   ]
