@@ -1,0 +1,5 @@
+# DeepSeek V4.1 Flash 1017 snapshot (needs a Token Harbor plan or balance).
+model = "deepseek-v4.1-flash-1017"
+coords = "auto"
+output = "tool_calls"
+max_tokens = 6000

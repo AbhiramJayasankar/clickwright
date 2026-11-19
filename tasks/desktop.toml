@@ -1,0 +1,51 @@
+# Real-desktop eval tasks. {work} is a fresh folder per eval run.
+# setup: commands started before the task (shell=False, list form).
+# check.kind: file_contains | file_absent_word | dir_exists | answer_contains | answer_regex | answer_equals_cmd
+
+[[task]]
+id = "notepad-type-save"
+prompt = "In the Notepad window that is open, type the text 'pixel agent test 42' and save the file as {work}\\note1.txt (use Save As if asked for a name)."
+setup = [["notepad.exe"]]
+max_steps = 25
+check = { kind = "file_contains", path = "{work}\\note1.txt", text = "pixel agent test 42" }
+cleanup = ["notepad.exe"]
+
+[[task]]
+id = "notepad-edit-replace"
+prompt = "Open the file {work}\\fruit.txt in Notepad, change the word 'apple' to 'banana', and save it."
+write_files = { "fruit.txt" = "I would like an apple today.\n" }
+setup = [["notepad.exe", "{work}\\fruit.txt"]]
+max_steps = 25
+check = { kind = "file_contains", path = "{work}\\fruit.txt", text = "I would like an banana today.", also_absent = "apple" }
+cleanup = ["notepad.exe"]
+
+[[task]]
+id = "explorer-new-folder"
+prompt = "In the File Explorer window showing {work}, create a new folder named PA_TEST_FOLDER."
+setup = [["explorer.exe", "{work}"]]
+max_steps = 25
+check = { kind = "dir_exists", path = "{work}\\PA_TEST_FOLDER" }
+
+[[task]]
+id = "calculator-multiply"
+prompt = "Use the Calculator app to compute 1234 multiplied by 56, then answer with the result."
+setup = [["cmd.exe", "/c", "start", "", "calculator:"]]
+max_steps = 25
+check = { kind = "answer_contains", any = ["69104", "69,104"] }
+cleanup = ["CalculatorApp.exe"]
+
+[[task]]
+id = "settings-windows-version"
+prompt = "Open the Windows Settings app, find the Windows version (for example 24H2 or 25H2) in System > About, and answer with it."
+setup = []
+max_steps = 30
+check = { kind = "answer_equals_cmd", cmd = ["reg", "query", "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "/v", "DisplayVersion"], pattern = "DisplayVersion\\s+REG_SZ\\s+(\\S+)" }
+cleanup = ["SystemSettings.exe"]
+
+[[task]]
+id = "paint-draw-line"
+prompt = "Open Paint (Start menu, search 'Paint'), draw any line on the canvas with the brush, then save the picture as {work}\\drawing.png."
+setup = []
+max_steps = 40
+check = { kind = "file_exists_min_bytes", path = "{work}\\drawing.png", bytes = 1000 }
+cleanup = ["mspaint.exe"]

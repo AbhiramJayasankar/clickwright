@@ -1,0 +1,463 @@
+{
+  "profile": "deepseek-flash-free",
+  "model": "deepseek-v4.1-flash:free",
+  "output": "tool_calls",
+  "date": "2026-11-19T22:56:55",
+  "trials": 16,
+  "answered": 16,
+  "errors": [],
+  "capabilities": {
+    "text": {
+      "ok": true,
+      "reply": "pong",
+      "s": 7.17
+    },
+    "image": {
+      "ok": true,
+      "reply": "CODE 7117",
+      "read_correctly": true,
+      "s": 1.63
+    },
+    "tools": {
+      "ok": true,
+      "native_tool_call": true,
+      "correct": true,
+      "reasoning_returned": false,
+      "s": 1.67
+    },
+    "json_text": {
+      "ok": true,
+      "parsed": true,
+      "s": 2.17
+    },
+    "suggested_output": "tool_calls"
+  },
+  "best": {
+    "convention": "pixels",
+    "median_px": 2.12,
+    "mean_px": 2.36,
+    "p90_px": 3.54,
+    "hit_rate": 1.0
+  },
+  "scores": {
+    "pixels": {
+      "median_px": 2.12,
+      "mean_px": 2.36,
+      "p90_px": 3.54,
+      "hit_rate": 1.0
+    },
+    "norm1000": {
+      "median_px": 163.93,
+      "mean_px": 173.99,
+      "p90_px": 268.74,
+      "hit_rate": 0.062
+    },
+    "norm999": {
+      "median_px": 164.1,
+      "mean_px": 174.16,
+      "p90_px": 269.01,
+      "hit_rate": 0.062
+    },
+    "norm1": {
+      "median_px": 751051.79,
+      "mean_px": 779743.48,
+      "p90_px": 1468701.48,
+      "hit_rate": 0.0
+    }
+  },
+  "median_error_by_target_size_px": {
+    "14": 2.1,
+    "20": 2.1,
+    "28": 2.1,
+    "40": 3.5,
+    "56": 1.1,
+    "80": 2.1
+  },
+  "duration_s": 13.9,
+  "trials_detail": [
+    {
+      "i": 0,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 871,
+        "y": 559,
+        "size": 14,
+        "cx": 877.5,
+        "cy": 565.5
+      },
+      "answer": [
+        877,
+        569
+      ],
+      "latency": 1.71,
+      "tokens": [
+        1093,
+        66
+      ]
+    },
+    {
+      "i": 1,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 504,
+        "y": 233,
+        "size": 20,
+        "cx": 513.5,
+        "cy": 242.5
+      },
+      "answer": [
+        512,
+        240
+      ],
+      "latency": 1.93,
+      "tokens": [
+        947,
+        72
+      ]
+    },
+    {
+      "i": 2,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "blue",
+        "shape": "square",
+        "x": 48,
+        "y": 908,
+        "size": 28,
+        "cx": 61.5,
+        "cy": 921.5
+      },
+      "answer": [
+        59,
+        920
+      ],
+      "latency": 1.82,
+      "tokens": [
+        1062,
+        66
+      ]
+    },
+    {
+      "i": 3,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "red",
+        "shape": "circle",
+        "x": 1129,
+        "y": 292,
+        "size": 40,
+        "cx": 1148.5,
+        "cy": 311.5
+      },
+      "answer": [
+        1145,
+        311
+      ],
+      "latency": 1.85,
+      "tokens": [
+        1099,
+        86
+      ]
+    },
+    {
+      "i": 4,
+      "w": 1280,
+      "h": 800,
+      "size": 56,
+      "target": {
+        "color": "orange",
+        "shape": "circle",
+        "x": 633,
+        "y": 511,
+        "size": 56,
+        "cx": 660.5,
+        "cy": 538.5
+      },
+      "answer": [
+        660,
+        537
+      ],
+      "latency": 1.79,
+      "tokens": [
+        1093,
+        65
+      ]
+    },
+    {
+      "i": 5,
+      "w": 1024,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 264,
+        "y": 123,
+        "size": 80,
+        "cx": 303.5,
+        "cy": 162.5
+      },
+      "answer": [
+        303,
+        163
+      ],
+      "latency": 2.49,
+      "tokens": [
+        947,
+        65
+      ]
+    },
+    {
+      "i": 6,
+      "w": 800,
+      "h": 1200,
+      "size": 14,
+      "target": {
+        "color": "black",
+        "shape": "circle",
+        "x": 143,
+        "y": 75,
+        "size": 14,
+        "cx": 149.5,
+        "cy": 81.5
+      },
+      "answer": [
+        148,
+        80
+      ],
+      "latency": 2.12,
+      "tokens": [
+        1062,
+        65
+      ]
+    },
+    {
+      "i": 7,
+      "w": 1366,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 91,
+        "y": 466,
+        "size": 20,
+        "cx": 100.5,
+        "cy": 475.5
+      },
+      "answer": [
+        99,
+        474
+      ],
+      "latency": 1.62,
+      "tokens": [
+        1099,
+        66
+      ]
+    },
+    {
+      "i": 8,
+      "w": 1280,
+      "h": 800,
+      "size": 28,
+      "target": {
+        "color": "green",
+        "shape": "circle",
+        "x": 786,
+        "y": 374,
+        "size": 28,
+        "cx": 799.5,
+        "cy": 387.5
+      },
+      "answer": [
+        800,
+        386
+      ],
+      "latency": 1.82,
+      "tokens": [
+        1093,
+        54
+      ]
+    },
+    {
+      "i": 9,
+      "w": 1024,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 95,
+        "y": 603,
+        "size": 40,
+        "cx": 114.5,
+        "cy": 622.5
+      },
+      "answer": [
+        113,
+        622
+      ],
+      "latency": 1.6,
+      "tokens": [
+        947,
+        65
+      ]
+    },
+    {
+      "i": 10,
+      "w": 800,
+      "h": 1200,
+      "size": 56,
+      "target": {
+        "color": "purple",
+        "shape": "circle",
+        "x": 634,
+        "y": 1115,
+        "size": 56,
+        "cx": 661.5,
+        "cy": 1142.5
+      },
+      "answer": [
+        661,
+        1143
+      ],
+      "latency": 1.67,
+      "tokens": [
+        1062,
+        71
+      ]
+    },
+    {
+      "i": 11,
+      "w": 1366,
+      "h": 768,
+      "size": 80,
+      "target": {
+        "color": "black",
+        "shape": "square",
+        "x": 101,
+        "y": 97,
+        "size": 80,
+        "cx": 140.5,
+        "cy": 136.5
+      },
+      "answer": [
+        141,
+        133
+      ],
+      "latency": 2.07,
+      "tokens": [
+        1099,
+        99
+      ]
+    },
+    {
+      "i": 12,
+      "w": 1280,
+      "h": 800,
+      "size": 14,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 723,
+        "y": 396,
+        "size": 14,
+        "cx": 729.5,
+        "cy": 402.5
+      },
+      "answer": [
+        731,
+        404
+      ],
+      "latency": 8.19,
+      "tokens": [
+        1093,
+        92
+      ]
+    },
+    {
+      "i": 13,
+      "w": 1024,
+      "h": 768,
+      "size": 20,
+      "target": {
+        "color": "blue",
+        "shape": "circle",
+        "x": 39,
+        "y": 115,
+        "size": 20,
+        "cx": 48.5,
+        "cy": 124.5
+      },
+      "answer": [
+        48,
+        123
+      ],
+      "latency": 8.4,
+      "tokens": [
+        947,
+        65
+      ]
+    },
+    {
+      "i": 14,
+      "w": 800,
+      "h": 1200,
+      "size": 28,
+      "target": {
+        "color": "purple",
+        "shape": "square",
+        "x": 115,
+        "y": 177,
+        "size": 28,
+        "cx": 128.5,
+        "cy": 190.5
+      },
+      "answer": [
+        127,
+        189
+      ],
+      "latency": 6.04,
+      "tokens": [
+        1062,
+        65
+      ]
+    },
+    {
+      "i": 15,
+      "w": 1366,
+      "h": 768,
+      "size": 40,
+      "target": {
+        "color": "orange",
+        "shape": "square",
+        "x": 1117,
+        "y": 536,
+        "size": 40,
+        "cx": 1136.5,
+        "cy": 555.5
+      },
+      "answer": [
+        1141,
+        553
+      ],
+      "latency": 6.5,
+      "tokens": [
+        1099,
+        68
+      ]
+    }
+  ]
+}

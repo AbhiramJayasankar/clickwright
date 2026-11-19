@@ -1,0 +1,4 @@
+model = "deepseek-v4-flash:free"
+coords = "auto"
+output = "tool_calls"
+max_tokens = 6000

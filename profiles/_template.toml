@@ -1,0 +1,18 @@
+# Copy to <name>.toml. Every setting is optional except model.
+model = "provider-model-id"
+api_base = "${TOKENHARBOR_BASE_URL}"   # any OpenAI-compatible /v1 endpoint; ${VAR} reads .env
+api_key = "${TOKENHARBOR_API_KEY}"
+coords = "auto"           # pixels | norm1000 | norm999 | norm1 | auto (use calibration result)
+output = "tool_calls"     # tool_calls | json_text (for models without function calling)
+max_long_edge = 1280      # screenshot size sent to the model (long edge, aspect kept)
+keep_screenshots = 3      # how many recent screenshots stay in the conversation
+evict_batch = 2           # evict old screenshots in batches so the prompt prefix stays cacheable
+max_tokens = 4096
+# temperature = 0.6
+carry_reasoning = false   # send the model's reasoning back on later turns
+end_mode = "answer_tool"  # answer_tool | no_tool_call
+element_hints = false     # add UI Automation element boxes as text
+max_elements = 120
+# price_in = 0.0          # USD per 1M tokens; default: read from the provider's /models
+# price_out = 0.0
+# extra_body = { reasoning_effort = "low" }

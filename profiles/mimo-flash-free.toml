@@ -1,0 +1,5 @@
+# Xiaomi MiMo V2.6 Flash, free route.
+model = "mimo-v2.6-flash:free"
+coords = "auto"
+output = "tool_calls"
+max_tokens = 6000

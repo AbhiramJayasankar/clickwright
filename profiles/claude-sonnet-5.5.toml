@@ -1,0 +1,5 @@
+# Strong baseline through the same OpenAI-compatible endpoint.
+model = "claude-sonnet-5.5"
+coords = "pixels"
+output = "tool_calls"
+max_tokens = 4096

@@ -1,0 +1,4 @@
+model = "qwen3.8-27b"
+coords = "auto"          # model card does not document it; run calibrate
+output = "tool_calls"
+max_tokens = 6000
