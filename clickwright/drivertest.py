@@ -49,7 +49,7 @@ def run(monitor_index=0, max_long_edge=1280, size=24):
         x, y = t["screen"][0] - r.left, t["screen"][1] - r.top
         cv.create_rectangle(x - size // 2, y - size // 2, x + size // 2 - 1, y + size // 2 - 1,
                             fill=_hex(t["color"]), outline="")
-    cv.create_text(r.width // 2, r.height // 2 + 60, text="pixel-agent driver test — do not touch the mouse",
+    cv.create_text(r.width // 2, r.height // 2 + 60, text="clickwright driver test — do not touch the mouse",
                    font=("Segoe UI", 16))
     cv.bind("<Button-1>", lambda e: clicks.append((e.x_root, e.y_root)))
     results = {}
@@ -98,8 +98,10 @@ def run(monitor_index=0, max_long_edge=1280, size=24):
     map_errs = [x["map_error_px"] for x in rows if "map_error_px" in x]
     in_errs = [x["input_error_px"] for x in rows if x.get("input_error_px") is not None]
     scale = results.get("frame", {})
-    # One screenshot pixel covers sx screen pixels, so up to ~sx/2 + 1 px map error is expected.
-    allowed_map = max(1.5, (r.width / max(1, scale.get("image_w", r.width))) / 2 + 1)
+    # Finding a target in a downscaled screenshot is only exact to about one screenshot
+    # pixel (sx screen px), plus ~1 px because Tk's rectangle edges make the true centre
+    # ambiguous by half a pixel on each axis.
+    allowed_map = (r.width / max(1, scale.get("image_w", r.width))) + 1
     report = {"dpi_mode": DPI_MODE, "monitor": mon.to_dict(), "frame": scale, "rows": rows,
               "max_map_error_px": max(map_errs) if map_errs else None, "allowed_map_error_px": round(allowed_map, 2),
               "max_input_error_px": max(in_errs) if in_errs else None,

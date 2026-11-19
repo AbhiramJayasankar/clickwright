@@ -1,4 +1,5 @@
 """The agent loop: screenshot -> model -> actions -> screenshot ..."""
+import json
 import time
 from dataclasses import dataclass, field
 
@@ -53,11 +54,13 @@ class Agent:
             print(text, flush=True)
 
     def _observe(self):
-        fg = self.driver.foreground()
-        self.safety.check_foreground(fg)
         self.safety.check_kill(self.driver.cursor())
-        return self.driver.observe(self.profile.max_long_edge, with_elements=self.element_hints,
-                                   max_elements=self.profile.max_elements)
+        obs = self.driver.observe(self.profile.max_long_edge, with_elements=self.element_hints,
+                                  max_elements=self.profile.max_elements)
+        obs.note = self.safety.check_foreground(obs.foreground)
+        if obs.redacted:
+            obs.note = (obs.note + " " if obs.note else "") +                 f"{obs.redacted} private area(s) are blacked out; ignore them."
+        return obs
 
     def _add_image(self, png):
         part = image_part(png)
@@ -74,6 +77,26 @@ class Agent:
                 part.clear()
                 part.update(EVICTED)
             self._evicted = target
+        if self.profile.max_request_mb:
+            self._evict_to_size(self.profile.max_request_mb * 1_000_000)
+
+    def _request_bytes(self):
+        return len(json.dumps(self.messages, ensure_ascii=False).encode("utf-8"))
+
+    def _evict_oldest(self):
+        """Evict the oldest live screenshot, never the newest. False if nothing left to evict."""
+        if len(self._image_parts) - self._evicted <= 1:
+            return False
+        part = self._image_parts[self._evicted]
+        part.clear()
+        part.update(EVICTED)
+        self._evicted += 1
+        return True
+
+    def _evict_to_size(self, limit):
+        # 5% headroom for tool schemas and headers.
+        while self._request_bytes() > limit * 0.95 and self._evict_oldest():
+            pass
 
     def _to_image(self, x, y, frame):
         ix, iy = model_to_image(x, y, self.convention, frame.image_w, frame.image_h)
@@ -132,7 +155,9 @@ class Agent:
                 target = d.foreground()
             if target:
                 rec["target"] = {"title": (target.get("title") or "")[:80], "process": target.get("process")}
-            err = s.check_target(act.name, target)
+            # Hovering and window-switching shortcuts send nothing into the app under them.
+            harmless = act.name == "move" or (act.name == "key" and s.is_navigation_key(a["keys"]))
+            err = None if harmless else s.check_target(act.name, target)
             if err is None and act.name == "type":
                 err = s.check_typing(d.focused_is_password())
             if err:
@@ -193,12 +218,12 @@ class Agent:
             sys_text = system_prompt(self.convention, f.image_w, f.image_h, p.output, self.platform_name,
                                      self.extra_instructions)
             log.image("step_001.png", obs.png)
-            first = [{"type": "text", "text": f"Task: {task}\n\n" + observation_text(obs, self.convention, 1, self.max_steps)},
+            first = [{"type": "text", "text": f"Task: {task}\n\n" + observation_text(obs, self.convention, 1, self.max_steps, note=obs.note)},
                      self._add_image(obs.png)]
             self.messages = [{"role": "system", "content": sys_text}, {"role": "user", "content": first}]
             tools = A.tool_schemas(self.convention) if tool_mode else None
             empty_replies, failing_replies = 0, 0
-            self._say(f"[pixel-agent] {p.name} ({p.model}) | coords={self.convention} ({self.convention_source}) | "
+            self._say(f"[clickwright] {p.name} ({p.model}) | coords={self.convention} ({self.convention_source}) | "
                       f"screenshot {f.image_w}x{f.image_h} | log: {log.dir if self.log_enabled else 'off'}")
 
             while True:
@@ -220,9 +245,21 @@ class Agent:
                     comp = self.client.complete(self.messages, tools=tools, max_tokens=p.max_tokens,
                                                 temperature=p.temperature)
                 except ModelError as e:
-                    log.step({"step": step, "error": str(e), "status": e.status})
-                    result = RunResult("error", reason=f"model call failed: {e}")
-                    break
+                    comp = None
+                    if e.status == 413:
+                        # Request too large for the provider: keep only the newest screenshot and retry once.
+                        while self._evict_oldest():
+                            pass
+                        self._say("  request too large (HTTP 413); dropped older screenshots and retrying")
+                        try:
+                            comp = self.client.complete(self.messages, tools=tools, max_tokens=p.max_tokens,
+                                                        temperature=p.temperature)
+                        except ModelError as e2:
+                            e = e2
+                    if comp is None:
+                        log.step({"step": step, "error": str(e), "status": e.status})
+                        result = RunResult("error", reason=f"model call failed: {e}")
+                        break
 
                 if tool_mode and comp.tool_calls:
                     acts = A.from_tool_calls(comp.tool_calls)
@@ -319,7 +356,8 @@ class Agent:
                 obs = self._observe()
                 log.image(f"step_{step + 1:03d}.png", obs.png)
                 content = []
-                text = observation_text(obs, self.convention, step + 1, self.max_steps, note=result_note)
+                text = observation_text(obs, self.convention, step + 1, self.max_steps,
+                                        note=" ".join(x for x in (result_note, obs.note) if x))
                 content.append({"type": "text", "text": text})
                 for png, rec in zooms:
                     content.append({"type": "text", "text": f"Zoomed view ({rec['text'].split(' follows')[0]}):"})
@@ -329,7 +367,7 @@ class Agent:
                 self.messages.append({"role": "user", "content": content})
         except StopRun as e:
             result = RunResult("stopped", reason=str(e))
-            self._say(f"[pixel-agent] stopped: {e}")
+            self._say(f"[clickwright] stopped: {e}")
         except KeyboardInterrupt:
             result = RunResult("stopped", reason="interrupted (Ctrl+C)")
         except Exception as e:
@@ -342,7 +380,7 @@ class Agent:
             result.run_dir = str(log.dir) if self.log_enabled else ""
             log.finish({"status": result.status, "answer": result.answer, "success": result.success,
                         "reason": result.reason, "steps": result.steps, "totals": result.totals})
-        self._say(f"[pixel-agent] {result.status}" + (f": {result.answer}" if result.answer else "")
+        self._say(f"[clickwright] {result.status}" + (f": {result.answer}" if result.answer else "")
                   + (f" ({result.reason})" if result.reason else "")
                   + f" | {result.steps} steps, {result.duration_s}s, "
                   + f"{result.totals.get('prompt_tokens', 0)}+{result.totals.get('completion_tokens', 0)} tokens"

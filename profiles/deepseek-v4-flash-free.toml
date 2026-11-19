@@ -2,3 +2,4 @@ model = "deepseek-v4-flash:free"
 coords = "auto"
 output = "tool_calls"
 max_tokens = 6000
+max_request_mb = 3.8      # Token Harbor free accounts reject requests over 4 MB

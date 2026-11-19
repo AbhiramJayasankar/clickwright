@@ -117,3 +117,51 @@ def describe_convention(convention, image_w, image_h):
         return ("Coordinates are decimals from 0 to 1 relative to the screenshot "
                 "(0,0 is the top-left corner, 1,1 the bottom-right).")
     raise ValueError(convention)
+
+
+def intersect(a, b):
+    left, top = max(a.left, b.left), max(a.top, b.top)
+    right, bottom = min(a.right, b.right), min(a.bottom, b.bottom)
+    if right <= left or bottom <= top:
+        return None
+    return Rect(left, top, right - left, bottom - top)
+
+
+def subtract(rect, cutters):
+    """Parts of rect not covered by any of cutters, as a list of Rects."""
+    parts = [rect]
+    for c in cutters:
+        nxt = []
+        for p in parts:
+            i = intersect(p, c)
+            if i is None:
+                nxt.append(p)
+                continue
+            if i.top > p.top:  # band above
+                nxt.append(Rect(p.left, p.top, p.width, i.top - p.top))
+            if i.bottom < p.bottom:  # band below
+                nxt.append(Rect(p.left, i.bottom, p.width, p.bottom - i.bottom))
+            if i.left > p.left:  # left of the cut, within its rows
+                nxt.append(Rect(p.left, i.top, i.left - p.left, i.height))
+            if i.right < p.right:
+                nxt.append(Rect(i.right, i.top, p.right - i.right, i.height))
+        parts = nxt
+        if not parts:
+            break
+    return parts
+
+
+def redaction_rects(stack, is_protected):
+    """Screen rects to black out: visible parts of protected windows.
+
+    stack is front-to-back. A protected window is hidden except where an
+    opaque (occluder) window lies in front of it. Protected windows themselves
+    still count as occluders for what is behind them (it is blacked out anyway).
+    """
+    covered, out = [], []
+    for w in stack:
+        if is_protected(w):
+            out.extend(subtract(w["rect"], covered))
+        if w.get("occluder", True):
+            covered.append(w["rect"])
+    return out

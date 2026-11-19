@@ -1,5 +1,5 @@
 [project]
-name = "pixel-agent"
+name = "clickwright"
 version = "0.1.0"
 description = "Model-agnostic computer-use agent for Windows that acts with pixel coordinates"
 requires-python = ">=3.11"
@@ -9,11 +9,11 @@ dependencies = []
 uia = ["comtypes>=1.4"]   # UI Automation hints and the password-box check
 
 [project.scripts]
-pixel-agent = "pixel_agent.cli:main"
+clickwright = "clickwright.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["pixel_agent", "pixel_agent.win"]
+packages = ["clickwright", "clickwright.win"]

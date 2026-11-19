@@ -1,4 +1,4 @@
-"""Command line: python -m pixel_agent <command> ...
+"""Command line: python -m clickwright <command> ...
 
   check                         environment report (DPI, monitors, UIA, hotkey, profiles)
   models                        list the provider's models with prices
@@ -103,6 +103,9 @@ def _safety(args, desktop=True):
         from .win import screen
         prim = screen.monitors()[0].rect
         s.set_primary_corner(prim.left, prim.top)
+        if getattr(args, "protect_existing", False):
+            n = s.protect_existing_windows()
+            print(f"protecting {n} windows that were already open")
     return s
 
 
@@ -111,8 +114,8 @@ def cmd_run(args):
     from .driver import WindowsDriver
     p = _profile(args)
     target = f"window:{args.window}" if args.window else ("screen" if args.all_screens else f"monitor:{args.monitor}")
-    driver = WindowsDriver(target)
     safety = _safety(args)
+    driver = WindowsDriver(target, protect=safety.is_protected)
     print(f"Stop at any time: {args.kill_key}, or push the mouse into the top-left corner of the main screen.")
     agent = Agent(p, driver, safety=safety, max_steps=args.max_steps, budget_usd=args.budget,
                   token_budget=args.token_budget, element_hints=args.hints or None, dry_run=args.dry_run)
@@ -163,12 +166,15 @@ def cmd_driver_test(args):
 
 def cmd_screenshot(args):
     from .driver import WindowsDriver
-    d = WindowsDriver(f"window:{args.window}" if args.window else f"monitor:{args.monitor}")
+    from .safety import Safety
+    s = Safety(deny_apps=args.deny, deny_titles=args.deny_title, corner_failsafe=False)
+    d = WindowsDriver(f"window:{args.window}" if args.window else f"monitor:{args.monitor}",
+                      protect=s.is_protected)
     obs = d.observe(args.max_long_edge, with_elements=args.hints)
     Path(args.out).write_bytes(obs.png)
     print(json.dumps({"saved": args.out, "frame": obs.frame.to_dict(), "cursor": obs.cursor,
                       "foreground": obs.foreground, "elements": len(obs.elements),
-                      "capture_ms": round(obs.capture_ms)}, indent=1))
+                      "redacted_areas": obs.redacted, "capture_ms": round(obs.capture_ms)}, indent=1))
 
 
 def cmd_view(args):
@@ -191,12 +197,12 @@ def _finish(res, args):
 
 
 def build_parser():
-    ap = argparse.ArgumentParser(prog="pixel-agent", description="Model-agnostic pixel computer-use agent")
+    ap = argparse.ArgumentParser(prog="clickwright", description="Model-agnostic pixel computer-use agent")
     ap.add_argument("--version", action="version", version=__version__)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def prof(sp):
-        sp.add_argument("-p", "--profile", default=os.environ.get("PIXEL_AGENT_PROFILE", "deepseek-flash-free"))
+        sp.add_argument("-p", "--profile", default=os.environ.get("CLICKWRIGHT_PROFILE", "deepseek-flash-free"))
 
     def runopts(sp):
         sp.add_argument("--max-steps", type=int, default=40)
@@ -208,8 +214,12 @@ def build_parser():
     def safetyopts(sp):
         sp.add_argument("--allow", action="append", default=[], metavar="APP.exe",
                         help="only act on these apps (repeatable)")
-        sp.add_argument("--deny", action="append", default=[], metavar="APP.exe", help="never act on these apps")
-        sp.add_argument("--deny-title", action="append", default=[], metavar="REGEX")
+        sp.add_argument("--deny", action="append", default=[], metavar="APP.exe",
+                        help="private app: blacked out of screenshots and never acted on (repeatable)")
+        sp.add_argument("--deny-title", action="append", default=[], metavar="REGEX",
+                        help="private windows by title regex (repeatable)")
+        sp.add_argument("--protect-existing", action="store_true",
+                        help="black out and never touch any window that was open before the run")
         sp.add_argument("--allow-passwords", action="store_true")
         sp.add_argument("--confirm", action="store_true", help="ask y/n before every input action")
         sp.add_argument("--kill-key", default="ctrl+alt+q")
@@ -278,6 +288,8 @@ def build_parser():
     sp.add_argument("--window")
     sp.add_argument("--max-long-edge", type=int, default=1280)
     sp.add_argument("--hints", action="store_true")
+    sp.add_argument("--deny", action="append", default=[], metavar="APP.exe", help="black out this app")
+    sp.add_argument("--deny-title", action="append", default=[], metavar="REGEX")
     sp.set_defaults(fn=cmd_screenshot)
 
     sp = sub.add_parser("view")

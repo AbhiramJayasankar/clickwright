@@ -10,7 +10,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 
-USER_AGENT = "pixel-agent/0.1"
+USER_AGENT = "clickwright/0.1"
 RETRY_STATUS = {408, 409, 425, 429, 500, 502, 503, 504, 520, 522, 524, 529}
 
 

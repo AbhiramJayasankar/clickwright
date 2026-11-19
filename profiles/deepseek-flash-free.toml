@@ -4,3 +4,4 @@ coords = "auto"          # filled in by `calibrate`; falls back to pixels
 output = "tool_calls"
 max_tokens = 6000        # it thinks a lot; 600 was not enough for one screenshot
 notes = "Free route; Token Harbor does not say whether it serves the 1017 snapshot."
+max_request_mb = 3.8      # Token Harbor free accounts reject requests over 4 MB

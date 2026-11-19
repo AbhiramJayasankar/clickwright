@@ -11,6 +11,17 @@ from .api import user32, kernel32
 from ..geometry import Rect
 
 
+# Shell windows that are never "existing user windows" for --protect-existing.
+SHELL_CLASSES = {"Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd", "NotifyIconOverflowWindow",
+                 "Windows.UI.Core.CoreWindow", "XamlExplorerHostIslandWindow", "TopLevelWindowForOverflowXamlIsland"}
+SHELL_PROCESSES = {"searchhost.exe", "startmenuexperiencehost.exe", "shellexperiencehost.exe",
+                   "textinputhost.exe", "searchapp.exe", "nvidia overlay.exe"}
+
+
+def is_shell(win):
+    return (win.get("class") in SHELL_CLASSES) or ((win.get("process") or "").lower() in SHELL_PROCESSES)
+
+
 @dataclass
 class WindowInfo:
     hwnd: int
@@ -127,3 +138,54 @@ def focus(hwnd):
     ok = bool(user32.SetForegroundWindow(hwnd))
     time.sleep(0.15)
     return ok and user32.GetForegroundWindow() == hwnd
+
+
+def visible_stack():
+    """Every visible, non-minimised, non-cloaked top-level window, front to back,
+    titled or not (popups and menus included). Used for redaction.
+
+    occluder=False for layered/transparent/tool windows: they may be see-through
+    (overlays, shadows), so they never count as hiding what is behind them.
+    """
+    out = []
+
+    def cb(hwnd, _lp):
+        if not user32.IsWindowVisible(hwnd) or user32.IsIconic(hwnd) or _cloaked(hwnd):
+            return True
+        r = bounds(hwnd)
+        if r is None or r.width <= 0 or r.height <= 0:
+            return True
+        ex = user32.GetWindowLongPtrW(hwnd, api.GWL_EXSTYLE)
+        see_through = bool(ex & (api.WS_EX_LAYERED | api.WS_EX_TRANSPARENT | api.WS_EX_TOOLWINDOW
+                                 | api.WS_EX_NOACTIVATE))
+        cls = _class(hwnd)
+        if cls in SHELL_CLASSES and cls in ("Progman", "WorkerW"):
+            see_through = False  # the desktop itself is opaque
+        proc, pid = process_of(hwnd)
+        out.append({"hwnd": int(hwnd), "rect": r, "process": proc, "title": _title(hwnd),
+                    "class": cls, "occluder": not see_through})
+        return True
+
+    user32.EnumWindows(api.WNDENUMPROC(cb), 0)
+    return out
+
+
+def all_top_level():
+    """Every top-level window that has WS_VISIBLE set, including minimised and
+    cloaked ones (other virtual desktops). Used to snapshot 'existing' windows."""
+    out = []
+
+    def cb(hwnd, _lp):
+        if user32.IsWindowVisible(hwnd):
+            proc, _ = process_of(hwnd)
+            out.append({"hwnd": int(hwnd), "process": proc, "class": _class(hwnd), "title": _title(hwnd)})
+        return True
+
+    user32.EnumWindows(api.WNDENUMPROC(cb), 0)
+    return out
+
+
+def close_windows(hwnds):
+    """Ask windows to close (WM_CLOSE, as the title-bar X does). Apps may still prompt to save."""
+    for h in hwnds:
+        user32.PostMessageW(h, api.WM_CLOSE, 0, 0)

@@ -107,6 +107,10 @@ DWMWA_EXTENDED_FRAME_BOUNDS, DWMWA_CLOAKED = 9, 14
 PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 GA_ROOT = 2
 SW_RESTORE = 9
+GWL_EXSTYLE = -20
+WS_EX_TRANSPARENT, WS_EX_LAYERED, WS_EX_TOOLWINDOW, WS_EX_NOACTIVATE = 0x20, 0x80000, 0x80, 0x08000000
+GW_HWNDNEXT = 2
+WM_CLOSE = 0x0010
 WM_HOTKEY, WM_QUIT = 0x0312, 0x0012
 MOD_ALT, MOD_CONTROL, MOD_SHIFT, MOD_WIN, MOD_NOREPEAT = 0x1, 0x2, 0x4, 0x8, 0x4000
 
@@ -146,14 +150,19 @@ _sig(user32.GetWindowThreadProcessId, wt.DWORD, wt.HWND, ctypes.POINTER(wt.DWORD
 _sig(user32.EnumWindows, wt.BOOL, WNDENUMPROC, wt.LPARAM)
 _sig(user32.WindowFromPoint, wt.HWND, wt.POINT)
 _sig(user32.GetAncestor, wt.HWND, wt.HWND, wt.UINT)
+_sig(user32.GetWindowLongPtrW, ctypes.c_ssize_t, wt.HWND, ctypes.c_int)
+_sig(user32.GetTopWindow, wt.HWND, wt.HWND)
+_sig(user32.GetWindow, wt.HWND, wt.HWND, wt.UINT)
 _sig(user32.VkKeyScanW, ctypes.c_short, wt.WCHAR)
 _sig(user32.MapVirtualKeyW, wt.UINT, wt.UINT, wt.UINT)
 _sig(user32.GetDoubleClickTime, wt.UINT)
 _sig(user32.RegisterHotKey, wt.BOOL, wt.HWND, ctypes.c_int, wt.UINT, wt.UINT)
 _sig(user32.UnregisterHotKey, wt.BOOL, wt.HWND, ctypes.c_int)
 _sig(user32.GetMessageW, wt.BOOL, ctypes.POINTER(MSG), wt.HWND, wt.UINT, wt.UINT)
+_sig(user32.PostMessageW, wt.BOOL, wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM)
 _sig(user32.PostThreadMessageW, wt.BOOL, wt.DWORD, wt.UINT, wt.WPARAM, wt.LPARAM)
 _sig(user32.GetAsyncKeyState, ctypes.c_short, ctypes.c_int)
+_sig(user32.GetKeyState, ctypes.c_short, ctypes.c_int)
 _sig(user32.MessageBeep, wt.BOOL, wt.UINT)
 
 # gdi32

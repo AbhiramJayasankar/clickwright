@@ -52,6 +52,9 @@ class Profile:
     max_long_edge: int = 1280
     keep_screenshots: int = 3
     evict_batch: int = 2
+    # Largest request body the provider accepts, in MB (screenshots included). Older
+    # screenshots are evicted early to stay under it. None = no limit.
+    max_request_mb: float | None = None
     max_tokens: int = 4096
     temperature: float | None = None
     # Send the model's reasoning back on later turns (some APIs require it

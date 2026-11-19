@@ -5,7 +5,8 @@
 * app rules: actions are refused when the window under the pointer (or the
   focused window, for typing) belongs to a denied app, or is not on the
   allow list when one is given
-* protected windows: if a denied app is in front, nothing is captured or sent
+* protected windows: windows of denied apps/titles are blacked out of every
+  screenshot before it leaves the machine (see geometry.redaction_rects)
 * password boxes: typing into one is refused unless allowed
 * confirm mode: every input action waits for y/n in the terminal
 """
@@ -41,6 +42,7 @@ class Safety:
         self.kill_switch = kill_switch
         self.corner_failsafe = corner_failsafe
         self._confirm_fn = confirm_fn or _ask
+        self.protected_hwnds = set()
         self._last_agent_cursor = None
         self._corner = None
 
@@ -62,9 +64,20 @@ class Safety:
             if at_corner and not agent_put_it_there:
                 raise StopRun("mouse moved to the top-left corner (fail-safe)")
 
+    def protect_existing_windows(self):
+        """Treat every window open right now (except the Windows shell) as private:
+        the agent may only see and touch windows that appear after this call."""
+        from .win import windows
+        for w in windows.all_top_level():  # includes minimised windows
+            if not windows.is_shell(w):
+                self.protected_hwnds.add(w["hwnd"])
+        return len(self.protected_hwnds)
+
     def _denied(self, win):
         if not win:
             return None
+        if win.get("hwnd") in self.protected_hwnds:
+            return "this window was open before the run started (--protect-existing)"
         proc = (win.get("process") or "").lower()
         if proc in self.deny_apps:
             return f"{proc} is on the deny list"
@@ -74,11 +87,16 @@ class Safety:
                 return f"window title {title!r} matches a denied pattern"
         return None
 
+    def is_protected(self, win):
+        return self._denied(win) is not None
+
     def check_foreground(self, fg):
-        """Before capturing: never screenshot a protected window."""
-        reason = self._denied(fg)
-        if reason:
-            raise StopRun(f"protected window in front, not capturing: {reason}")
+        """Note for the model when the focused window is protected (it is blacked out
+        of the screenshot by the driver, and input to it is refused)."""
+        if self._denied(fg):
+            return ("The focused window is private: it is blacked out and you cannot type into it. "
+                    "Switch to the window you need (click it, use the taskbar, or alt+tab).")
+        return ""
 
     # --- per-action checks ----------------------------------------------
     def check_target(self, action_name, win):
@@ -92,6 +110,26 @@ class Safety:
                 allowed = ", ".join(sorted(self.allow_apps))
                 return f"refused: {proc or 'this window'} is not in the allowed apps ({allowed})"
         return None
+
+    @staticmethod
+    def is_navigation_key(keys):
+        """Shell shortcuts that switch windows or open Start/Run/Search rather than
+        sending input to the focused app: always allowed. Win+L (lock) is not."""
+        try:
+            from .win.keys import parse_combo
+            vks = parse_combo(keys)
+        except Exception:
+            return False
+        s = set(vks)
+        if s & {0x5B, 0x5C}:  # Windows key, alone or with others
+            return 0x4C not in s  # L
+        alt, ctrl = s & {0x12, 0xA4, 0xA5}, s & {0x11, 0xA2, 0xA3}
+        rest = s - {0x10, 0xA0, 0xA1, 0x12, 0xA4, 0xA5, 0x11, 0xA2, 0xA3}
+        if alt and not ctrl and rest in ({0x09}, {0x1B}):   # alt+tab, alt+shift+tab, alt+esc
+            return True
+        if ctrl and not alt and rest == {0x1B}:             # ctrl+esc (Start)
+            return True
+        return False
 
     def check_typing(self, password_focused):
         if password_focused and not self.allow_passwords:

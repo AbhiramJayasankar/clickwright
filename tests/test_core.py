@@ -4,11 +4,11 @@ import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from pixel_agent import actions as A
-from pixel_agent import png
-from pixel_agent.geometry import Frame, Rect, model_to_image, image_to_model, fit_size
-from pixel_agent.config import Profile
-from pixel_agent.safety import Safety, StopRun
+from clickwright import actions as A
+from clickwright import png
+from clickwright.geometry import Frame, Rect, model_to_image, image_to_model, fit_size
+from clickwright.config import Profile
+from clickwright.safety import Safety, StopRun
 
 
 class Geometry(unittest.TestCase):
@@ -46,6 +46,23 @@ class Geometry(unittest.TestCase):
 
 
 class Png(unittest.TestCase):
+    def test_sub_filter_roundtrip(self):
+        import random
+        rnd = random.Random(7)
+        w, h = 33, 9
+        rgb = bytes(rnd.getrandbits(8) for _ in range(w * h * 3))
+        old = png.TRY_FILTER_ABOVE
+        try:
+            png.TRY_FILTER_ABOVE = 0   # force the filtered attempt
+            data = png.encode_rgb(rgb, w, h)
+        finally:
+            png.TRY_FILTER_ABOVE = old
+        self.assertEqual(png.decode(data)[3], rgb)
+        filtered = png._sub_filtered(rgb, w * 3, h)
+        self.assertEqual(filtered[0], 1)
+        # byte 3 of row 0 is rgb[3] - rgb[0] mod 256
+        self.assertEqual(filtered[1 + 3], (rgb[3] - rgb[0]) % 256)
+
     def test_roundtrip(self):
         w, h = 7, 5
         bgra = bytearray()
@@ -109,9 +126,9 @@ class SafetyTests(unittest.TestCase):
         self.assertIn("not in the allowed", s.check_target("click", {"process": "chrome.exe", "title": "x"}))
         self.assertIn("deny", s.check_target("click", {"process": "keepassxc.exe", "title": "x"}))
         self.assertIn("password", s.check_typing(True))
-        with self.assertRaises(StopRun):
-            s.check_foreground({"process": "notepad.exe", "title": ".env - Notepad"})
-        s.check_foreground({"process": "notepad.exe", "title": "environment notes - Notepad"})
+        self.assertIn("private", s.check_foreground({"process": "notepad.exe", "title": ".env - Notepad"}))
+        self.assertEqual(s.check_foreground({"process": "notepad.exe", "title": "environment notes - Notepad"}), "")
+        self.assertTrue(s.is_protected({"process": "notepad.exe", "title": "C:/x/.env - Notepad"}))
 
     def test_corner(self):
         s = Safety()
@@ -133,7 +150,7 @@ class FakeClient:
                       "calls": 0, "latency": 0.0}
 
     def complete(self, messages, tools=None, **kw):
-        from pixel_agent.llm import Completion
+        from clickwright.llm import Completion
         self.sent.append(json.loads(json.dumps(messages)))
         self.total["calls"] += 1
         content, calls = self.replies.pop(0)
@@ -142,14 +159,19 @@ class FakeClient:
         return Completion(content, tcs, "", "tool_calls" if tcs else "stop", {}, 0.01, 1)
 
 
+def image_part_for(driver):
+    from clickwright.llm import image_part
+    return image_part(driver.observe(1280).png)
+
+
 class AgentLoop(unittest.TestCase):
     def _profile(self, **kw):
         return Profile(name="test", model="fake", coords=kw.pop("coords", "pixels"), keep_screenshots=2,
                        evict_batch=1, **kw)
 
     def test_form_in_simulator(self):
-        from pixel_agent.agent import Agent
-        from pixel_agent.sim import SimDriver
+        from clickwright.agent import Agent
+        from clickwright.sim import SimDriver
         d = SimDriver("form", seed=3)
         sc = d.scene
         # Image is 1280x800 for the 1920x1200 sim screen: divide screen coords by 1.5.
@@ -183,9 +205,41 @@ class AgentLoop(unittest.TestCase):
                    for p in m["content"] if p.get("type") == "image_url")
         self.assertLessEqual(live, 2)
 
+    def test_request_size_limit_and_413_retry(self):
+        from clickwright.agent import Agent
+        from clickwright.llm import ModelError
+        from clickwright.sim import SimDriver
+
+        class TooBigOnce(FakeClient):
+            def __init__(self, replies):
+                super().__init__(replies)
+                self.failed = False
+
+            def complete(self, messages, tools=None, **kw):
+                if len(self.sent) == 2 and not self.failed:
+                    self.failed = True
+                    raise ModelError("HTTP 413: too large", 413)
+                return super().complete(messages, tools, **kw)
+
+        def live(msgs):
+            return sum(1 for m in msgs if isinstance(m["content"], list)
+                       for p in m["content"] if p.get("type") == "image_url")
+
+        d = SimDriver("targets", seed=1)
+        replies = [("", [("screenshot", {})])] * 4 + [("", [("answer", {"text": "done"})])]
+        # keep_screenshots would allow 2 live images, but the size budget only fits one.
+        one_image = len(json.dumps(image_part_for(d)))
+        prof = self._profile(max_request_mb=(one_image * 1.6) / 1_000_000)
+        client = TooBigOnce(replies)
+        res = Agent(prof, d, client, max_steps=10, log=False, verbose=False).run("look")
+        self.assertEqual(res.status, "done")
+        self.assertTrue(client.failed)
+        for msgs in client.sent:
+            self.assertEqual(live(msgs), 1)
+
     def test_norm1000_and_errors(self):
-        from pixel_agent.agent import Agent
-        from pixel_agent.sim import SimDriver
+        from clickwright.agent import Agent
+        from clickwright.sim import SimDriver
         d = SimDriver("targets", seed=1)
         sc = d.scene
         replies = []
@@ -204,8 +258,8 @@ class AgentLoop(unittest.TestCase):
         self.assertGreaterEqual(details["hit"], 5, details)  # smallest target may be missed by rounding
 
     def test_json_text_mode(self):
-        from pixel_agent.agent import Agent
-        from pixel_agent.sim import SimDriver
+        from clickwright.agent import Agent
+        from clickwright.sim import SimDriver
         d = SimDriver("menu", seed=2)
         sc = d.scene
 
@@ -257,7 +311,7 @@ class MockServer(BaseHTTPRequestHandler):
 
 class Client(unittest.TestCase):
     def test_retry_and_cost(self):
-        from pixel_agent.llm import ChatClient
+        from clickwright.llm import ChatClient
         srv = HTTPServer(("127.0.0.1", 0), MockServer)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         try:
@@ -272,7 +326,7 @@ class Client(unittest.TestCase):
 
 class Keys(unittest.TestCase):
     def test_parse(self):
-        from pixel_agent.win.keys import parse_combo
+        from clickwright.win.keys import parse_combo
         self.assertEqual(parse_combo("ctrl+s"), [0x11, ord("S")])
         self.assertEqual(parse_combo("Control_L+Shift+t"), [0xA2, 0x10, ord("T")])
         self.assertEqual(parse_combo("Return"), [0x0D])
@@ -288,8 +342,8 @@ class Reports(unittest.TestCase):
     def test_run_log_and_html(self):
         import tempfile
         from pathlib import Path
-        from pixel_agent.agent import Agent
-        from pixel_agent.sim import SimDriver
+        from clickwright.agent import Agent
+        from clickwright.sim import SimDriver
         d = SimDriver("slider", seed=0)
         sc = d.scene
         tx = round(sc._thumb_x() / 1.5)
@@ -311,3 +365,32 @@ class Reports(unittest.TestCase):
             self.assertFalse((run / "report-error.txt").exists())
             ok, details = sc.check(res.answer)
             self.assertTrue(ok, details)
+
+
+class Redaction(unittest.TestCase):
+    def test_subtract_and_stack(self):
+        from clickwright.geometry import subtract, redaction_rects
+        r = Rect(0, 0, 100, 100)
+        parts = subtract(r, [Rect(25, 25, 50, 50)])
+        self.assertEqual(sum(p.width * p.height for p in parts), 100 * 100 - 50 * 50)
+        self.assertEqual(subtract(r, [Rect(-10, -10, 200, 200)]), [])
+        stack = [  # front to back
+            {"rect": Rect(0, 0, 2880, 1800), "process": "overlay.exe", "occluder": False},
+            {"rect": Rect(100, 100, 800, 600), "process": "notepad.exe", "occluder": True},
+            {"rect": Rect(0, 0, 2880, 1800), "process": "chrome.exe", "occluder": True},
+        ]
+        rects = redaction_rects(stack, lambda w: w["process"] == "chrome.exe")
+        area = sum(p.width * p.height for p in rects)
+        self.assertEqual(area, 2880 * 1800 - 800 * 600)  # overlay does not hide chrome; notepad does
+        for p in rects:
+            self.assertIsNone(__import__("clickwright.geometry", fromlist=["intersect"]).intersect(
+                p, Rect(100, 100, 800, 600)))
+
+
+class NavigationKeys(unittest.TestCase):
+    def test_nav(self):
+        nav = Safety.is_navigation_key
+        for k in ("win", "cmd", "win+r", "win+d", "alt+tab", "alt+shift+tab", "ctrl+esc", "alt+esc", "super"):
+            self.assertTrue(nav(k), k)
+        for k in ("win+l", "ctrl+s", "enter", "esc", "alt+f4", "ctrl+alt+tab", "a"):
+            self.assertFalse(nav(k), k)

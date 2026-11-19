@@ -22,9 +22,7 @@ border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0}
 @media (max-width:900px){.step{grid-template-columns:1fr}header{position:static;padding:16px}main{padding:8px 16px 40px}}
 .shot{position:relative;line-height:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .shot img{width:100%;height:auto}
-.mk{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:3px solid var(--mark);
-box-shadow:0 0 0 2px #fff8}.mk span{position:absolute;left:16px;top:-6px;font:700 11px/1 sans-serif;color:#fff;
-background:var(--mark);padding:2px 4px;border-radius:3px;white-space:nowrap}
+.mk{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--mark);box-shadow:0 0 0 1.5px #fffc}.mk span{position:absolute;left:10px;top:-20px;font:700 11px/1 sans-serif;color:#fff;background:var(--mark);padding:2px 4px;border-radius:3px;white-space:nowrap;opacity:.92}
 .mk.end{border-color:var(--mark2)}.mk.end span{background:var(--mark2)}
 .zoomrect{position:absolute;border:2px dashed var(--mark2)}
 h2{font-size:14px;margin:0 0 8px;display:flex;gap:10px;align-items:baseline}h2 small{color:var(--mute);font-weight:400}

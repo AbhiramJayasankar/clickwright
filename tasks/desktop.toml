@@ -1,5 +1,7 @@
 # Real-desktop eval tasks. {work} is a fresh folder per eval run.
 # setup: commands started before the task (shell=False, list form).
+# single_instance: window-title regexes of apps that reuse one window; the task is
+#   skipped when such a window is already open and protected.
 # check.kind: file_contains | file_absent_word | dir_exists | answer_contains | answer_regex | answer_equals_cmd
 
 [[task]]
@@ -12,9 +14,11 @@ cleanup = ["notepad.exe"]
 
 [[task]]
 id = "notepad-edit-replace"
-prompt = "Open the file {work}\\fruit.txt in Notepad, change the word 'apple' to 'banana', and save it."
+# Windows 11 Notepad opens a file argument as a tab in an existing window, which may be
+# a protected one, so start an empty window and let the agent open the file from it.
+prompt = "In the Notepad window that is open, open the file {work}\\fruit.txt (File > Open), change the word 'apple' to 'banana' using Notepad itself, and save it."
 write_files = { "fruit.txt" = "I would like an apple today.\n" }
-setup = [["notepad.exe", "{work}\\fruit.txt"]]
+setup = [["notepad.exe"]]
 max_steps = 25
 check = { kind = "file_contains", path = "{work}\\fruit.txt", text = "I would like an banana today.", also_absent = "apple" }
 cleanup = ["notepad.exe"]
@@ -38,6 +42,7 @@ cleanup = ["CalculatorApp.exe"]
 id = "settings-windows-version"
 prompt = "Open the Windows Settings app, find the Windows version (for example 24H2 or 25H2) in System > About, and answer with it."
 setup = []
+single_instance = ["^Settings$"]   # skipped if Settings is already open in a protected window
 max_steps = 30
 check = { kind = "answer_equals_cmd", cmd = ["reg", "query", "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "/v", "DisplayVersion"], pattern = "DisplayVersion\\s+REG_SZ\\s+(\\S+)" }
 cleanup = ["SystemSettings.exe"]

@@ -133,9 +133,21 @@ def key(combo, repeat=1):
         time.sleep(EVENT_GAP)
 
 
-def type_text(text, interval=0.004):
-    """Type text independent of the keyboard layout (KEYEVENTF_UNICODE).
-    Newlines become Enter and tabs Tab, because many apps ignore unicode CR."""
+def _caps_lock_on():
+    return bool(user32.GetKeyState(0x14) & 1)
+
+
+def type_text(text, interval=0.008):
+    """Type text.
+
+    Characters the current keyboard layout can produce are sent as real key
+    presses (with Shift as needed, Caps Lock accounted for). Anything else
+    (emoji, other scripts) goes as KEYEVENTF_UNICODE, one event pair at a time.
+    Sending everything as unicode is simpler but the WinUI Windows 11 Notepad
+    garbles fast VK_PACKET input ("Clickwright" -> "iiiiiiiight").
+    Newlines become Enter and tabs Tab.
+    """
+    caps = _caps_lock_on()
     for ch in text:
         if ch == "\r":
             continue
@@ -145,14 +157,21 @@ def type_text(text, interval=0.004):
         if ch == "\t":
             press_keys([0x09])
             continue
-        units = ch.encode("utf-16-le")
-        codes = [int.from_bytes(units[i:i + 2], "little") for i in range(0, len(units), 2)]
-        evs = []
-        for c in codes:
-            evs.append(_key(0, c, api.KEYEVENTF_UNICODE))
-        for c in codes:
-            evs.append(_key(0, c, api.KEYEVENTF_UNICODE | api.KEYEVENTF_KEYUP))
-        _send(*evs)
+        res = user32.VkKeyScanW(ch) if len(ch.encode("utf-16-le")) == 2 else -1
+        mods = (res >> 8) & 0xFF if res != -1 else 0xFF
+        if res != -1 and mods in (0, 1):  # plain or shifted key, no Ctrl/Alt (AltGr) needed
+            vk = res & 0xFF
+            shift = bool(mods & 1)
+            if caps and ch.isalpha():
+                shift = not shift
+            press_keys([0x10, vk] if shift else [vk])
+        else:
+            units = ch.encode("utf-16-le")
+            for i in range(0, len(units), 2):
+                c = int.from_bytes(units[i:i + 2], "little")
+                _send(_key(0, c, api.KEYEVENTF_UNICODE))
+                time.sleep(0.004)
+                _send(_key(0, c, api.KEYEVENTF_UNICODE | api.KEYEVENTF_KEYUP))
         if interval:
             time.sleep(interval)
 

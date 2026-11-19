@@ -14,7 +14,7 @@ def system_prompt(convention, image_w, image_h, output_mode, platform_name=None,
         "- After your actions run, you get a new screenshot. Never assume an action worked: check the next screenshot.",
         f"- {describe_convention(convention, image_w, image_h)}",
         "- Aim at the centre of the thing you want to click. If a target is small or text is hard to read, use zoom first.",
-        "- The mouse pointer is drawn in the screenshot.",
+        "- The mouse pointer is drawn in the screenshot. Solid black areas hide private windows: never interact with them.",
         "- Prefer keyboard shortcuts when they are reliable (ctrl+s, ctrl+l, alt+tab, win to open Start, enter, esc).",
         "- To type into a field, click it first, then use type. Use key for shortcuts and special keys.",
         "- Several actions in one reply are fine when you are sure of the outcome (e.g. click a field, then type); "

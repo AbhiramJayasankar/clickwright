@@ -112,17 +112,36 @@ def run_eval(profile, which="sim", only=None, repeats=1, max_steps=None, seed=0,
                 work.mkdir(parents=True, exist_ok=True)
                 for fname, content in (task.get("write_files") or {}).items():
                     (work / fname).write_text(content, encoding="utf-8")
+                from .win import windows as W
                 before = _pids(task.get("cleanup") or [])
+                # Safety first: --protect-existing must snapshot windows before the task opens its own.
+                safety = safety_factory() if safety_factory else Safety()
+                existing = {w["hwnd"] for w in W.all_top_level()}
+                busy = _protected_single_instance(task, safety, W)
+                if busy:
+                    if safety.kill_switch:
+                        safety.kill_switch.stop()
+                    rows.append(_skipped_row(kind, name, rep, busy))
+                    if verbose:
+                        print(f"== {kind}:{name} #{rep}: SKIP ({busy})", flush=True)
+                    continue
                 for cmd in task.get("setup") or []:
                     subprocess.Popen(_fmt(cmd, work), close_fds=True)
                 time.sleep(2.5 if task.get("setup") else 0.5)
-                driver = WindowsDriver(driver_target)
-                safety = safety_factory() if safety_factory else Safety()
+                driver = WindowsDriver(driver_target, protect=safety.is_protected)
                 agent = Agent(profile, driver, client, safety, max_steps=max_steps or task.get("max_steps", 25),
                               budget_usd=budget_usd, runs_dir=out_dir, verbose=verbose, element_hints=element_hints)
-                res = agent.run(_fmt(task["prompt"], work))
+                try:
+                    res = agent.run(_fmt(task["prompt"], work))
+                finally:
+                    if safety.kill_switch:
+                        safety.kill_switch.stop()
                 passed, details = check_desktop(task, res.answer, work)
-                # Close only the processes this task started.
+                # Close the windows this task opened (so the next task's snapshot doesn't
+                # protect them), then any leftover processes it started.
+                W.close_windows([w["hwnd"] for w in W.all_top_level()
+                                 if w["hwnd"] not in existing and not W.is_shell(w)])
+                time.sleep(1.0)
                 after = _pids(task.get("cleanup") or [])
                 for proc, pids in after.items():
                     for pid in pids - before.get(proc, set()):
@@ -143,6 +162,26 @@ def run_eval(profile, which="sim", only=None, repeats=1, max_steps=None, seed=0,
     return out_dir, rows, summary
 
 
+def _protected_single_instance(task, safety, W):
+    """Single-instance apps (Settings) reuse their open window. If that window is
+    protected, the agent could never see it, so the task is skipped, not failed.
+    `single_instance` lists window-title regexes (UWP windows all belong to
+    ApplicationFrameHost.exe, so the process name doesn't say which app it is)."""
+    pats = [re.compile(t) for t in task.get("single_instance") or []]
+    if not pats:
+        return None
+    for w in W.all_top_level():
+        if any(p.search(w.get("title") or "") for p in pats) and safety.is_protected(w):
+            return "the app is already open in a protected window; close it and rerun"
+    return None
+
+
+def _skipped_row(kind, name, rep, reason):
+    return {"kind": kind, "task": name, "repeat": rep, "passed": False, "status": "skipped", "answer": "",
+            "reason": reason, "steps": 0, "seconds": 0.0, "prompt_tokens": 0, "completion_tokens": 0,
+            "cost_usd": 0.0, "run_dir": "", "details": reason}
+
+
 def _row(kind, name, rep, res, passed, details, t0):
     tot = res.totals or {}
     return {"kind": kind, "task": name, "repeat": rep, "passed": bool(passed), "status": res.status,
@@ -152,10 +191,12 @@ def _row(kind, name, rep, res, passed, details, t0):
 
 
 def _summary(rows):
+    skipped = sum(r["status"] == "skipped" for r in rows)
+    rows = [r for r in rows if r["status"] != "skipped"]
     if not rows:
-        return {}
+        return {"tasks": 0, "passed": 0, "skipped": skipped}
     n = len(rows)
-    return {"tasks": n, "passed": sum(r["passed"] for r in rows),
+    return {"tasks": n, "passed": sum(r["passed"] for r in rows), "skipped": skipped,
             "pass_rate": round(sum(r["passed"] for r in rows) / n, 3),
             "avg_steps": round(sum(r["steps"] for r in rows) / n, 1),
             "avg_seconds": round(sum(r["seconds"] for r in rows) / n, 1),
@@ -165,11 +206,12 @@ def _summary(rows):
 
 def _markdown(profile, rows, s):
     lines = [f"# Eval: {profile.name} ({profile.model})", "",
-             f"Passed {s.get('passed', 0)}/{s.get('tasks', 0)} · avg {s.get('avg_steps')} steps · "
+             f"Passed {s.get('passed', 0)}/{s.get('tasks', 0)}"
+             + (f" ({s['skipped']} skipped)" if s.get("skipped") else "") + f" · avg {s.get('avg_steps')} steps · "
              f"avg {s.get('avg_seconds')}s · ${s.get('total_cost_usd', 0)} · {s.get('total_tokens', 0)} tokens", "",
              "| task | result | status | steps | seconds | tokens | cost | run |", "|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        lines.append(f"| {r['kind']}:{r['task']} | {'PASS' if r['passed'] else 'FAIL'} | {r['status']} | {r['steps']} | "
+        lines.append(f"| {r['kind']}:{r['task']} | {'PASS' if r['passed'] else ('SKIP' if r['status'] == 'skipped' else 'FAIL')} | {r['status']} | {r['steps']} | "
                      f"{r['seconds']} | {r['prompt_tokens'] + r['completion_tokens']} | ${r['cost_usd']} | "
                      f"{os.path.basename(r['run_dir'] or '')} |")
     return "\n".join(lines) + "\n"
